@@ -25,8 +25,8 @@ func defaultConfig() Config {
 		AfterburnerPath: `C:\Program Files (x86)\MSI Afterburner\MSIAfterburner.exe`,
 		ProfileOn:       "-Profile2",
 		ProfileOff:      "-Profile1",
-		DelaySeconds:    15,
-		MonitoringMode:  "event",
+		DelaySeconds:    5,
+		MonitoringMode:  "poll",
 		Overrides:       make(map[string]string),
 	}
 }

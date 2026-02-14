@@ -95,7 +95,6 @@ func main() {
 	hProcess := syscall.Handle(^uintptr(0))
 	ret, _, err := syscall.NewLazyDLL("kernel32.dll").NewProc("SetProcessAffinityMask").Call(
 		uintptr(hProcess),
-		
 		0xF,
 	)
 	if ret == 0 {
