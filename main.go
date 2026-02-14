@@ -12,16 +12,6 @@ import (
 	"MSIAfterburnerScript/watcher"
 )
 
-type SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX struct {
-    Relationship uint32
-    Size         uint32
-}
-
-var (
-	kernel32                       = syscall.NewLazyDLL("kernel32.dll")
-	procSetProcessAffinityMask      = kernel32.NewProc("SetProcessAffinityMask")
-)
-
 // runAfterburner executes the MSI Afterburner command.
 func runAfterburner(exe, arg string) {
 	cmd := exec.Command(exe, arg)
@@ -101,10 +91,11 @@ func startEventMode(cfg config.Config) {
 
 func main() {
 	log.SetFlags(log.Ltime)
+	// Run only on the first 4 Cores, mostly Performance Cores
 	hProcess := syscall.Handle(^uintptr(0))
-	ret, _, err := procSetProcessAffinityMask.Call(
+	ret, _, err := syscall.NewLazyDLL("kernel32.dll").NewProc("SetProcessAffinityMask").Call(
 		uintptr(hProcess),
-		// Run only on the first 4 Cores, mostly Performance Cores
+		
 		0xF,
 	)
 	if ret == 0 {
@@ -113,6 +104,7 @@ func main() {
 	}
 	runtime.GOMAXPROCS(4)
 	log.Println("CPU Affinity set to Cores 0-3")
+	//
 	cfg := config.Load()
 	log.Println("Configuration loaded.")
 	switch strings.ToLower(cfg.MonitoringMode) {
