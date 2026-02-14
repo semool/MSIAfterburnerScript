@@ -23,7 +23,7 @@ type Config struct {
 func defaultConfig() Config {
 	return Config{
 		AfterburnerPath: `C:\Program Files (x86)\MSI Afterburner\MSIAfterburner.exe`,
-		ProfileOn:       "-Profile5",
+		ProfileOn:       "-Profile2",
 		ProfileOff:      "-Profile1",
 		DelaySeconds:    15,
 		MonitoringMode:  "event",

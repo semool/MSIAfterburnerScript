@@ -38,12 +38,12 @@ _I have included the downloadable binaries for Windows, but if you want to build
 2. **Install Resource Tool:** The project uses a manifest to request administrator privileges. You need `go-rsrc` to embed it. Install it with:
 `go install github.com/akavel/rsrc@latest`
 3. **Generate Resource File:** In the project's root directory, run `rsrc` to create the `.syso` file that the Go compiler will automatically embed:
-`rsrc -manifest main.manifest -o main.syso`
+`rsrc -manifest main.manifest -ico icon.ico`
 4. Build the Executable:
    * To build a version that runs silently in the background (recommended for deployment), use this command:
-`go build -ldflags="-H windowsgui"`
+`go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerScript.exe"`
    * To build a version with a visible console for debugging, use the standard build command:
-`go build`
+`go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerScriptDebug.exe`
 
 ## Configuration
 The application is controlled by the `config.json` file, which will be created with default values on the first run.
@@ -51,13 +51,13 @@ The application is controlled by the `config.json` file, which will be created w
 ```json
 {
     "afterburner_path": "C:\\Program Files (x86)\\MSI Afterburner\\MSIAfterburner.exe",
-    "profile_on": "-Profile5",
+    "profile_on": "-Profile2",
     "profile_off": "-Profile1",
     "delay_seconds": 15,
     "monitoring_mode": "event",
     "overrides": {
-        "mygame": "-Profile5",
-        "another_app.exe": "-Profile4",
+        "mygame": "-Profile4",
+        "another_app.exe": "-Profile1",
         "My Window Title": ""
     }
 }
