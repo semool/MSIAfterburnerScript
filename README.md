@@ -29,7 +29,7 @@ The application is state-aware and will only send a command to MSI Afterburner w
 
 ## Installation & Setup
 ### Prerequisites
-_I have included the downloadable binaries for Windows, but if you want to build it yourself, you will need the following:_
+_I have included the downloadable binarie for Windows, but if you want to build it yourself, you will need the following:_
 1. **Go:** You must have Go (version 1.26.0 or newer) installed. You can download it from the [official Go website](https://go.dev/dl/).
 2. **MSI Afterburner:** This utility requires MSI Afterburner to be installed and configured with at least two saved profiles (_e.g., Profile 1 for idle, Profile 5 for gaming_).
 
@@ -43,10 +43,7 @@ _I have included the downloadable binaries for Windows, but if you want to build
 3. **Generate Resource File:** In the project's root directory, run `rsrc` to create the `.syso` file that the Go compiler will automatically embed:
    * `rsrc -manifest main.manifest -ico icon.ico`
 3. **Build the Executable**:
-   * To build a version that runs silently in the background (recommended for deployment), use this command:
-     * `go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerProfileSwitcher.exe`
-   * To build a version with a visible console for debugging, use the standard build command:
-     * `go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerProfileSwitcherDebug.exe`
+   * `go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerProfileSwitcher.exe`
 
 ## Configuration
 The application is controlled by the `config.json` file, which will be created with default values on the first run.
@@ -79,4 +76,5 @@ The application is controlled by the `config.json` file, which will be created w
 1. Configure your config.json file with your desired settings and targets.
 2. Run the compiled .exe file.
 3. The application will request administrator privileges (if not already elevated) and start monitoring in the background.
-For best results, add the executable to your Windows startup folder so it runs automatically when you log in.
+4. When running the application will have a Trayicon with Context Menu. You can stop the App or toogle the Console to show the Log Output.
+5. For best results, add the executable to your Windows startup folder so it runs automatically when you log in.

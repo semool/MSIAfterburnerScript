@@ -10,6 +10,9 @@ import (
 
 	"MSIAfterburnerProfileSwitcher/config"
 	"MSIAfterburnerProfileSwitcher/watcher"
+	"MSIAfterburnerProfileSwitcher/trayicon"
+
+	"github.com/getlantern/systray"
 )
 
 // runAfterburner executes the MSI Afterburner command.
@@ -88,6 +91,29 @@ func startEventMode(cfg config.Config) {
 }
 
 func main() {
+	systray.Run(onReady, onExit)
+}
+
+func onReady() {
+	trayicon.HideConsole()
+	// Add Tray Icon
+	systray.SetIcon(trayicon.IconData)
+	systray.SetTitle("MSI Afterburner Profile Switcher")
+	systray.SetTooltip("MSI Afterburner Profile Switcher is running")
+	sConsole := systray.AddMenuItem("Toogle Console", "Toogle Console")
+	mQuit := systray.AddMenuItem("Close MSI Afterburner Profile Switcher", "Quits this app")
+	go func() {
+		for {
+			select {
+			case <-sConsole.ClickedCh:
+				trayicon.ToggleConsole()
+			case <-mQuit.ClickedCh:
+				systray.Quit()
+				return
+			}
+		}
+	}()
+	//
 	log.SetFlags(log.Ltime)
 	// Run only on the first 4 Cores, mostly Performance Cores
 	hProcess := syscall.Handle(^uintptr(0))
@@ -109,4 +135,8 @@ func main() {
 	default:
 		log.Fatalf("Invalid monitoring_mode %q in config.json", cfg.MonitoringMode)
 	}
+}
+
+func onExit() {
+	//showConsole()
 }
