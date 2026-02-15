@@ -158,6 +158,10 @@ func getForegroundTarget(keywords []string) (string, bool) {
 
 // isProcessActive checks if any running process name contains a keyword.
 func isProcessActive(keywords []string) (string, bool) {
+	lowerKeywords := make([]string, len(keywords))
+	for i, k := range keywords {
+		lowerKeywords[i] = strings.ToLower(k)
+	}
 	processes, err := process.Processes()
 	if err != nil {
 		return "", false
@@ -167,10 +171,10 @@ func isProcessActive(keywords []string) (string, bool) {
 		if err != nil {
 			continue
 		}
-		lowerExeName := strings.ToLower(name)
-		for _, keyword := range keywords {
-			if strings.Contains(lowerExeName, keyword) {
-				return keyword, true
+		lowerName := strings.ToLower(name)
+		for _, kw := range lowerKeywords {
+			if strings.Contains(lowerName, kw) {
+				return kw, true
 			}
 		}
 	}
