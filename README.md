@@ -29,22 +29,23 @@ The application is state-aware and will only send a command to MSI Afterburner w
 
 ## Installation & Setup
 ### Prerequisites
-_I have included the downloadable binaries for Windows, but if you want to build it yourself, you will need the following:_
 1. **Go:** You must have Go (version 1.26.0 or newer) installed. You can download it from the [official Go website](https://go.dev/dl/).
 2. **MSI Afterburner:** This utility requires MSI Afterburner to be installed and configured with at least two saved profiles (_e.g., Profile 1 for idle, Profile 5 for gaming_).
 
 ### Building the Application
-1. **Clone or Download:** Get the project files onto your computer. 
-2. **Install Resource Tool:** The project uses a manifest to request administrator privileges. You need `go-rsrc` to embed it. Install it with:
-`go install github.com/akavel/rsrc@latest`
+1. Clone or Download the project files onto your computer.
+2. Run **`BUILDEXE.cmd`** to compile Normal and Debug Version.
+
+### Manual Steps
+1. **Install Resource Tool:** The project uses a manifest to request administrator privileges. You need `go-rsrc` to embed it. Install it with:
+   * `go install github.com/akavel/rsrc@latest`
 3. **Generate Resource File:** In the project's root directory, run `rsrc` to create the `.syso` file that the Go compiler will automatically embed:
-`rsrc -manifest main.manifest -ico icon.ico`
-4. Build the Executable:
+   * `rsrc -manifest main.manifest -ico icon.ico`
+3. **Build the Executable**:
    * To build a version that runs silently in the background (recommended for deployment), use this command:
-`go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerProfileSwitcher.exe`
+     * `go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerProfileSwitcher.exe`
    * To build a version with a visible console for debugging, use the standard build command:
-`go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerProfileSwitcherDebug.exe`
-   * Alternatively run the `BUILDEXE.cmd` to compile both versions
+     * `go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerProfileSwitcherDebug.exe`
 
 ## Configuration
 The application is controlled by the `config.json` file, which will be created with default values on the first run.
@@ -70,7 +71,7 @@ The application is controlled by the `config.json` file, which will be created w
 * **delay_seconds:** (Only used in poll mode) The number of seconds to wait between checks.
 * **monitoring_mode:** Can be "event" (recommended) or "poll". 
   * "event" mode uses system hooks to detect changes instantly, while "poll" mode checks at regular intervals from the `delay_seconds` value.
-* overrides: This is your list of target applications and their specific profiles.
+* **overrides:** This is your list of target applications and their specific profiles.
     * The key is the keyword to search for (case-insensitive). This can be part of a process name or window title. 
     * The value is the specific profile to apply (e.g., "-Profile4"). If you leave the value as an empty string (""), the default profile_on will be used for that target.
 ## Usage
