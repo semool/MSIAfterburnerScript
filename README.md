@@ -29,6 +29,7 @@ The application is state-aware and will only send a command to MSI Afterburner w
 
 ## Installation & Setup
 ### Prerequisites
+_I have included the downloadable binaries for Windows, but if you want to build it yourself, you will need the following:_
 1. **Go:** You must have Go (version 1.26.0 or newer) installed. You can download it from the [official Go website](https://go.dev/dl/).
 2. **MSI Afterburner:** This utility requires MSI Afterburner to be installed and configured with at least two saved profiles (_e.g., Profile 1 for idle, Profile 5 for gaming_).
 
