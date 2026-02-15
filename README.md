@@ -41,7 +41,7 @@ _I have included the downloadable binarie for Windows, but if you want to build 
 1. **Install Resource Tool:** The project uses a manifest to request administrator privileges. You need `go-rsrc` to embed it. Install it with:
    * `go install github.com/akavel/rsrc@latest`
 3. **Generate Resource File:** In the project's root directory, run `rsrc` to create the `.syso` file that the Go compiler will automatically embed:
-   * `rsrc -manifest main.manifest -ico icon.ico`
+   * `rsrc -manifest main.manifest -ico trayicon/icon.ico`
 3. **Build the Executable**:
    * `go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerProfileSwitcher.exe`
 
