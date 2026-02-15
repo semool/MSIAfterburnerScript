@@ -4,6 +4,7 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
+	"sync"
 	"syscall"
 	"unsafe"
 
@@ -40,7 +41,16 @@ var (
 
 	psapi                    = windows.NewLazySystemDLL("psapi.dll")
 	procGetModuleFileNameExW = psapi.NewProc("GetModuleFileNameExW")
+
+	callbackOnce sync.Once
+	callbackPtr  uintptr
+	globalWinEventProc uintptr
 )
+
+type enumContext struct {
+	keywords []string
+	found    string
+}
 
 // StartEventWatcher sets up Windows event hooks to listen for system events.
 func StartEventWatcher(handler func()) {
@@ -50,29 +60,18 @@ func StartEventWatcher(handler func()) {
 			return 0
 		})
 
-		hookForeground, _, err := procSetWinEventHook.Call(eventSystemForeground, eventSystemForeground, 0, winEventProc, 0, 0, wndOutofcontext)
+		hookForeground, _, err := procSetWinEventHook.Call(uintptr(eventSystemForeground), uintptr(eventSystemForeground), 0, winEventProc, 0, 0, uintptr(wndOutofcontext))
 		if hookForeground == 0 {
 			log.Fatalf("Fatal: Could not set foreground event hook: %v", err)
 		}
-		hookCreate, _, err := procSetWinEventHook.Call(eventObjectCreate, eventObjectDestroy, 0, winEventProc, 0, 0, wndOutofcontext)
+
+		hookCreate, _, err := procSetWinEventHook.Call(uintptr(eventObjectCreate), uintptr(eventObjectDestroy), 0, winEventProc, 0, 0, uintptr(wndOutofcontext))
 		if hookCreate == 0 {
 			log.Fatalf("Fatal: Could not set create/destroy event hook: %v", err)
 		}
 
-		defer func() {
-			ret, _, err := procUnhookWinEvent.Call(hookForeground)
-			if ret == 0 {
-				log.Printf("Warning: Failed to unhook foreground event hook: %v", err)
-			}
-		}()
-		defer func() {
-			ret, _, err := procUnhookWinEvent.Call(hookCreate)
-			if ret == 0 {
-				log.Printf("Warning: Failed to unhook create/destroy event hook: %v", err)
-			}
-		}()
-
-		// log.Println("Event hooks set. Listening for system events...")
+		defer procUnhookWinEvent.Call(hookForeground)
+		defer procUnhookWinEvent.Call(hookCreate)
 
 		var msg struct{ Hwnd, Message, WParam, LParam, Time, Pt uintptr }
 		for {
@@ -80,15 +79,8 @@ func StartEventWatcher(handler func()) {
 			if int32(ret) == -1 {
 				break
 			}
-			_, _, err := procTranslateMessage.Call(uintptr(unsafe.Pointer(&msg)))
-			if err != nil && err.(syscall.Errno) != 0 {
-				log.Fatalf("TranslateMessage failed: %v", err)
-			}
-			_, _, err = procDispatchMessageW.Call(uintptr(unsafe.Pointer(&msg)))
-			if err != nil && err.(syscall.Errno) != 0 {
-				log.Fatalf("DispatchMessageW failed: %v", err)
-			}
-
+			procTranslateMessage.Call(uintptr(unsafe.Pointer(&msg)))
+			procDispatchMessageW.Call(uintptr(unsafe.Pointer(&msg)))
 		}
 	}()
 }
@@ -182,35 +174,46 @@ func isProcessActive(keywords []string) (string, bool) {
 }
 
 // isWindowActive checks if any visible window title contains a keyword.
-func isWindowActive(keywords []string) (string, bool) {
-	var foundKeyword string
-	cb := syscall.NewCallback(func(hwnd syscall.Handle, _ uintptr) uintptr {
-		isVisible, _, _ := procIsWindowVisible.Call(uintptr(hwnd))
-		if isVisible == 0 {
-			return 1 // Continue
-		}
-		title := getWindowText(windows.HWND(hwnd))
-		if title != "" {
-			lowerTitle := strings.ToLower(title)
-			for _, keyword := range keywords {
-				if strings.Contains(lowerTitle, keyword) {
-					foundKeyword = keyword
-					return 0 // Stop enumeration
+func getEnumWindowsCallback() uintptr {
+	callbackOnce.Do(func() {
+		callbackPtr = windows.NewCallback(func(hwnd windows.HWND, lParam uintptr) uintptr {
+			ctx := (*enumContext)(unsafe.Pointer(lParam))
+			visible, _, _ := procIsWindowVisible.Call(uintptr(hwnd))
+			if visible == 0 {
+				return 1
+			}
+			title := getWindowText(hwnd)
+			if title == "" {
+				return 1
+			}
+			lower := strings.ToLower(title)
+			for _, keyword := range ctx.keywords {
+				if strings.Contains(lower, keyword) {
+					ctx.found = keyword
+					return 0 // stop enumeration
 				}
 			}
-		}
-		return 1 // Continue
+			return 1
+		})
 	})
+	return callbackPtr
+}
 
-	// A return of 0 here can mean the callback stopped it, which is not an error.
-	// A true failure is when ret is 0 AND the error is not nil.
-	ret, _, err := procEnumWindows.Call(cb, 0)
-	if ret == 0 && err != nil {
-		log.Printf("Warning: EnumWindows call failed with an error: %v", err)
+func isWindowActive(keywords []string) (string, bool) {
+	ctx := enumContext{
+		keywords: keywords,
+		found:    "",
 	}
-
-	if foundKeyword != "" {
-		return foundKeyword, true
+	cb := getEnumWindowsCallback()
+	ret, _, err := procEnumWindows.Call(
+		cb,
+		uintptr(unsafe.Pointer(&ctx)),
+	)
+	if ret == 0 && ctx.found == "" && err != nil {
+		log.Printf("EnumWindows failed: %v", err)
+	}
+	if ctx.found != "" {
+		return ctx.found, true
 	}
 	return "", false
 }

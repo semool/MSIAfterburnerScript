@@ -26,7 +26,7 @@ func defaultConfig() Config {
 		ProfileOn:       "-Profile2",
 		ProfileOff:      "-Profile1",
 		DelaySeconds:    5,
-		MonitoringMode:  "poll",
+		MonitoringMode:  "event",
 		Overrides:       make(map[string]string),
 	}
 }

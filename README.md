@@ -13,8 +13,8 @@ If multiple target applications are open, the script is smart enough to apply th
 * **Foreground Priority:** Intelligently detects which application is currently in use and applies its specific profile, even with multiple target apps open.
 * **Highly Configurable:** All settings, including Afterburner's path, profiles, and target applications, are managed in a simple config.json file.
 * **Two Monitoring Modes:**
-    * **Event:** An efficient, instant-reaction mode that uses system event hooks to detect application changes with no delay.
-    * **Poll (Default):** A fallback mode that checks for active applications on a timed interval.
+    * **Event (Default):** An efficient, instant-reaction mode that uses system event hooks to detect application changes with no delay.
+    * **Poll:** A fallback mode that checks for active applications on a timed interval.
 * **Partial Matching:** Detects applications even if the keyword in your config is only part of the process name or window title (e.g., "mygame" will match "mygame.exe").
 * **Run as Administrator:** Includes an embedded manifest to ensure it always runs with the necessary permissions to control MSI Afterburner.
 
@@ -54,7 +54,7 @@ The application is controlled by the `config.json` file, which will be created w
     "profile_on": "-Profile2",
     "profile_off": "-Profile1",
     "delay_seconds": 5,
-    "monitoring_mode": "poll",
+    "monitoring_mode": "event",
     "overrides": {
         "mygame": "-Profile4",
         "another_app.exe": "-Profile1",
@@ -69,7 +69,6 @@ The application is controlled by the `config.json` file, which will be created w
 * **delay_seconds:** (Only used in poll mode) The number of seconds to wait between checks.
 * **monitoring_mode:** Can be "event" or "poll" (recommended). 
   * "event" mode uses system hooks to detect changes instantly, while "poll" mode checks at regular intervals from the `delay_seconds` value.
-  * **WARNING "event" mode is broken. It calls infinite Windows Events and the exe will crash in minutes. The "event" code needs revision.**
 * overrides: This is your list of target applications and their specific profiles.
     * The key is the keyword to search for (case-insensitive). This can be part of a process name or window title. 
     * The value is the specific profile to apply (e.g., "-Profile4"). If you leave the value as an empty string (""), the default profile_on will be used for that target.
