@@ -43,11 +43,10 @@ func checkStateAndApplyProfile(cfg *config.Config, currentProfile *string) {
 	}
 
 	if desiredProfile != *currentProfile {
-		log.Printf("State change detected. Desired profile: %s", desiredProfile)
 		if isActive {
-			log.Printf("Reason: Active target '%s' found", activeTarget)
+			log.Printf("State change! Target found: '%s', Desired profile: %s", activeTarget, desiredProfile)
 		} else {
-			log.Printf("Reason: No active target found")
+			log.Printf("State change! Target found: '', Desired profile: %s", desiredProfile)
 		}
 		runAfterburner(cfg.AfterburnerPath, desiredProfile)
 		*currentProfile = desiredProfile
