@@ -43,11 +43,11 @@ func checkStateAndApplyProfile(cfg *config.Config, currentProfile *string) {
 	}
 
 	if desiredProfile != *currentProfile {
-		log.Printf("State change detected. Desired profile: %s.", desiredProfile)
+		log.Printf("State change detected. Desired profile: %s", desiredProfile)
 		if isActive {
-			log.Printf("Reason: Active target '%s' found.", activeTarget)
+			log.Printf("Reason: Active target '%s' found", activeTarget)
 		} else {
-			log.Printf("Reason: No active targets found.")
+			log.Printf("Reason: No active targets found")
 		}
 		runAfterburner(cfg.AfterburnerPath, desiredProfile)
 		*currentProfile = desiredProfile
@@ -56,7 +56,7 @@ func checkStateAndApplyProfile(cfg *config.Config, currentProfile *string) {
 
 // startPollingMode runs the application by checking for targets on a timer.
 func startPollingMode(cfg config.Config) {
-	log.Println("Starting in Polling Mode.")
+	log.Println("Starting in Polling Mode")
 	var currentProfile string
 	checkStateAndApplyProfile(&cfg, &currentProfile)
 	ticker := time.NewTicker(time.Duration(cfg.DelaySeconds) * time.Second)
@@ -73,7 +73,7 @@ func startPollingMode(cfg config.Config) {
 
 // startEventMode runs the application by listening for system events.
 func startEventMode(cfg config.Config) {
-	log.Println("Starting in Event-Driven Mode.")
+	log.Println("Starting in Event-Driven Mode")
 	var currentProfile string
 	eventHandler := func() {
 		reloadedCfg := config.Load()
@@ -102,10 +102,10 @@ func main() {
 		return
 	}
 	runtime.GOMAXPROCS(4)
-	log.Println("CPU Affinity set to Cores 0-3")
+	log.Println("CPU Affinity is set to Cores 0-3")
 	//
 	cfg := config.Load()
-	log.Println("Configuration loaded.")
+	log.Println("Configuration succesfully loaded")
 	switch strings.ToLower(cfg.MonitoringMode) {
 	case "poll":
 		startPollingMode(cfg)
