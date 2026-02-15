@@ -182,6 +182,10 @@ func isProcessActive(keywords []string) (string, bool) {
 }
 
 // isWindowActive checks if any visible window title contains a keyword.
+func containsFold(s, substr string) bool {
+	return strings.Contains(strings.ToLower(s), strings.ToLower(substr))
+}
+
 func getEnumWindowsCallback() uintptr {
 	callbackOnce.Do(func() {
 		callbackPtr = windows.NewCallback(func(hwnd windows.HWND, lParam uintptr) uintptr {
@@ -194,11 +198,10 @@ func getEnumWindowsCallback() uintptr {
 			if title == "" {
 				return 1
 			}
-			lower := strings.ToLower(title)
 			for _, keyword := range ctx.keywords {
-				if strings.Contains(lower, keyword) {
+				if containsFold(title, keyword) {
 					ctx.found = keyword
-					return 0 // stop enumeration
+					return 0
 				}
 			}
 			return 1
