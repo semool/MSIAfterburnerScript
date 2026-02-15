@@ -239,5 +239,5 @@ func getWindowText(hwnd windows.HWND) string {
 	if ret == 0 {
 		return ""
 	}
-	return windows.UTF16ToString(buf)
+	return windows.UTF16ToString(buf[:ret])
 }
