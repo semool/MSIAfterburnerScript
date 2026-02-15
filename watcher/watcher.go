@@ -92,15 +92,15 @@ func FirstActiveTarget(targets map[string]string) (string, bool) {
 	for k := range targets {
 		keywords = append(keywords, k)
 	}
-
-	if name, ok := getForegroundTarget(keywords); ok {
-		return name, true
+	checkers := []func([]string) (string, bool){
+		getForegroundTarget,
+		isProcessActive,
+		isWindowActive,
 	}
-	if name, ok := isProcessActive(keywords); ok {
-		return name, true
-	}
-	if name, ok := isWindowActive(keywords); ok {
-		return name, true
+	for _, checker := range checkers {
+		if name, ok := checker(keywords); ok {
+			return name, true
+		}
 	}
 	return "", false
 }
