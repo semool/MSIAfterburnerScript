@@ -107,52 +107,53 @@ func FirstActiveTarget(targets map[string]string) (string, bool) {
 
 // getForegroundTarget checks if the foreground app's process or title contains a keyword.
 func getForegroundTarget(keywords []string) (string, bool) {
+	lowerKeywords := make([]string, len(keywords))
+	for i, kw := range keywords {
+		lowerKeywords[i] = strings.ToLower(kw)
+	}
 	hwnd, _, _ := procGetForegroundWindow.Call()
 	if hwnd == 0 {
 		return "", false
 	}
-
 	title := getWindowText(windows.HWND(hwnd))
 	if title != "" {
-		lowerTitle := strings.ToLower(title)
-		for _, keyword := range keywords {
-			if strings.Contains(lowerTitle, keyword) {
-				return keyword, true
-			}
+		if found, ok := containsKeyword(title, lowerKeywords); ok {
+			return found, true
 		}
 	}
-
 	var pid uint32
-	_, _, err := procGetWindowThreadProcessId.Call(hwnd, uintptr(unsafe.Pointer(&pid)))
-	if err != nil {
-		return "", false
-	}
+	procGetWindowThreadProcessId.Call(hwnd, uintptr(unsafe.Pointer(&pid)))
 	if pid == 0 {
 		return "", false
 	}
-	handle, _, _ := procOpenProcess.Call(windows.PROCESS_QUERY_INFORMATION|windows.PROCESS_VM_READ, 0, uintptr(pid))
+	handle, _, _ := procOpenProcess.Call(
+		windows.PROCESS_QUERY_INFORMATION|windows.PROCESS_VM_READ,
+		0,
+		uintptr(pid),
+	)
 	if handle == 0 {
 		return "", false
 	}
-	defer func() {
-		ret, _, err := procCloseHandle.Call(handle)
-		if ret == 0 {
-			log.Printf("Warning: Failed to close process handle %v: %v", handle, err)
-		}
-	}()
-
+	defer procCloseHandle.Call(handle)
 	buf := make([]uint16, windows.MAX_PATH)
 	n, _, _ := procGetModuleFileNameExW.Call(handle, 0, uintptr(unsafe.Pointer(&buf[0])), windows.MAX_PATH)
 	if n > 0 {
-		exePath := windows.UTF16ToString(buf)
+		exePath := windows.UTF16ToString(buf[:n])
 		lowerExeName := strings.ToLower(filepath.Base(exePath))
-		for _, keyword := range keywords {
-			if strings.Contains(lowerExeName, keyword) {
-				return keyword, true
-			}
+		if found, ok := containsKeyword(lowerExeName, lowerKeywords); ok {
+			return found, true
 		}
 	}
+	return "", false
+}
 
+func containsKeyword(text string, lowerKeywords []string) (string, bool) {
+	lowerText := strings.ToLower(text)
+	for _, kw := range lowerKeywords {
+		if strings.Contains(lowerText, kw) {
+			return kw, true
+		}
+	}
 	return "", false
 }
 
@@ -182,8 +183,23 @@ func isProcessActive(keywords []string) (string, bool) {
 }
 
 // isWindowActive checks if any visible window title contains a keyword.
-func containsFold(s, substr string) bool {
-	return strings.Contains(strings.ToLower(s), strings.ToLower(substr))
+func isWindowActive(keywords []string) (string, bool) {
+	ctx := enumContext{
+		keywords: keywords,
+		found:    "",
+	}
+	cb := getEnumWindowsCallback()
+	ret, _, err := procEnumWindows.Call(
+		cb,
+		uintptr(unsafe.Pointer(&ctx)),
+	)
+	if ret == 0 && ctx.found == "" && err != nil {
+		log.Printf("EnumWindows failed: %v", err)
+	}
+	if ctx.found != "" {
+		return ctx.found, true
+	}
+	return "", false
 }
 
 func getEnumWindowsCallback() uintptr {
@@ -210,23 +226,8 @@ func getEnumWindowsCallback() uintptr {
 	return callbackPtr
 }
 
-func isWindowActive(keywords []string) (string, bool) {
-	ctx := enumContext{
-		keywords: keywords,
-		found:    "",
-	}
-	cb := getEnumWindowsCallback()
-	ret, _, err := procEnumWindows.Call(
-		cb,
-		uintptr(unsafe.Pointer(&ctx)),
-	)
-	if ret == 0 && ctx.found == "" && err != nil {
-		log.Printf("EnumWindows failed: %v", err)
-	}
-	if ctx.found != "" {
-		return ctx.found, true
-	}
-	return "", false
+func containsFold(s, substr string) bool {
+	return strings.Contains(strings.ToLower(s), strings.ToLower(substr))
 }
 
 func getWindowText(hwnd windows.HWND) string {
