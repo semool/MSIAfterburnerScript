@@ -67,7 +67,7 @@ The application is controlled by the `config.json` file, which will be created w
 * **profile_on:** The default profile to apply when a target application is found but doesn't have a specific override.
 * **profile_off:** The profile to apply when no target applications are active.
 * **delay_seconds:** (Only used in poll mode) The number of seconds to wait between checks.
-* **monitoring_mode:** Can be "event" or "poll" (recommended). 
+* **monitoring_mode:** Can be "event" (recommended) or "poll". 
   * "event" mode uses system hooks to detect changes instantly, while "poll" mode checks at regular intervals from the `delay_seconds` value.
 * overrides: This is your list of target applications and their specific profiles.
     * The key is the keyword to search for (case-insensitive). This can be part of a process name or window title. 

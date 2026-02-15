@@ -3,7 +3,7 @@
     "profile_on": "-Profile2",
     "profile_off": "-Profile1",
     "delay_seconds": 5,
-    "monitoring_mode": "poll",
+    "monitoring_mode": "event",
     "overrides": {
       "3dmark.exe": "",
       "acc.exe": "",

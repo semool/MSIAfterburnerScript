@@ -92,11 +92,7 @@ func FirstActiveTarget(targets map[string]string) (string, bool) {
 	for k := range targets {
 		keywords = append(keywords, k)
 	}
-	checkers := []func([]string) (string, bool){
-		getForegroundTarget,
-		isProcessActive,
-		isWindowActive,
-	}
+	checkers := []func([]string) (string, bool){getForegroundTarget, isProcessActive, isWindowActive}
 	for _, checker := range checkers {
 		if name, ok := checker(keywords); ok {
 			return name, true
@@ -126,11 +122,7 @@ func getForegroundTarget(keywords []string) (string, bool) {
 	if pid == 0 {
 		return "", false
 	}
-	handle, _, _ := procOpenProcess.Call(
-		windows.PROCESS_QUERY_INFORMATION|windows.PROCESS_VM_READ,
-		0,
-		uintptr(pid),
-	)
+	handle, _, _ := procOpenProcess.Call(windows.PROCESS_QUERY_INFORMATION|windows.PROCESS_VM_READ, 0, uintptr(pid))
 	if handle == 0 {
 		return "", false
 	}
