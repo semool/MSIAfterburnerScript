@@ -41,9 +41,10 @@ _I have included the downloadable binaries for Windows, but if you want to build
 `rsrc -manifest main.manifest -ico icon.ico`
 4. Build the Executable:
    * To build a version that runs silently in the background (recommended for deployment), use this command:
-`go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerProfileSwitcher.exe"`
+`go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerProfileSwitcher.exe`
    * To build a version with a visible console for debugging, use the standard build command:
 `go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerProfileSwitcherDebug.exe`
+   * Alternatively run the `BUILDEXE.cmd` to compile both versions
 
 ## Configuration
 The application is controlled by the `config.json` file, which will be created with default values on the first run.

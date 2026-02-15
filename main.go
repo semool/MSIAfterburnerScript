@@ -19,7 +19,7 @@ func runAfterburner(exe, arg string) {
 	if err := cmd.Start(); err != nil {
 		log.Printf("Failed to launch Afterburner with profile %s: %v", arg, err)
 	} else {
-		log.Printf("Successfully applied Afterburner profile: %s", arg)
+		log.Printf("Successfully applied profile: %s", arg)
 	}
 }
 
@@ -47,7 +47,7 @@ func checkStateAndApplyProfile(cfg *config.Config, currentProfile *string) {
 		if isActive {
 			log.Printf("Reason: Active target '%s' found", activeTarget)
 		} else {
-			log.Printf("Reason: No active targets found")
+			log.Printf("Reason: No active target found")
 		}
 		runAfterburner(cfg.AfterburnerPath, desiredProfile)
 		*currentProfile = desiredProfile
@@ -81,7 +81,6 @@ func startEventMode(cfg config.Config) {
 		cfg.ProfileOff = reloadedCfg.ProfileOff
 		cfg.Overrides = reloadedCfg.Overrides
 		cfg.AfterburnerPath = reloadedCfg.AfterburnerPath
-
 		checkStateAndApplyProfile(&cfg, &currentProfile)
 	}
 	eventHandler()
@@ -93,10 +92,7 @@ func main() {
 	log.SetFlags(log.Ltime)
 	// Run only on the first 4 Cores, mostly Performance Cores
 	hProcess := syscall.Handle(^uintptr(0))
-	ret, _, err := syscall.NewLazyDLL("kernel32.dll").NewProc("SetProcessAffinityMask").Call(
-		uintptr(hProcess),
-		0xF,
-	)
+	ret, _, err := syscall.NewLazyDLL("kernel32.dll").NewProc("SetProcessAffinityMask").Call(uintptr(hProcess), 0xF)
 	if ret == 0 {
 		log.Fatalf("Error while setting Affinity:", err)
 		return
