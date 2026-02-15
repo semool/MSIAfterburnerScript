@@ -6,7 +6,7 @@
       name="main"
       type="win32"
   />
-  <description>Afterburner Profile Manager</description>
+  <description>MSI Afterburner Profile Switcher</description>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
     <security>
       <requestedPrivileges>
@@ -18,3 +18,4 @@
     </security>
   </trustInfo>
 </assembly>
+
