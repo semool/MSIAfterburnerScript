@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/mitchellh/go-ps"
+	"github.com/shirou/gopsutil/v4/process"
 	"golang.org/x/sys/windows"
 )
 
@@ -158,12 +158,16 @@ func getForegroundTarget(keywords []string) (string, bool) {
 
 // isProcessActive checks if any running process name contains a keyword.
 func isProcessActive(keywords []string) (string, bool) {
-	processes, err := ps.Processes()
+	processes, err := process.Processes()
 	if err != nil {
 		return "", false
 	}
 	for _, p := range processes {
-		lowerExeName := strings.ToLower(p.Executable())
+		name, err := p.Name()
+		if err != nil {
+			continue
+		}
+		lowerExeName := strings.ToLower(name)
 		for _, keyword := range keywords {
 			if strings.Contains(lowerExeName, keyword) {
 				return keyword, true

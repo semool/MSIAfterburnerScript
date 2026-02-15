@@ -8,8 +8,8 @@ import (
 	"time"
 	"runtime"
 
-	"MSIAfterburnerScript/config"
-	"MSIAfterburnerScript/watcher"
+	"MSIAfterburnerProfileSwitcher/config"
+	"MSIAfterburnerProfileSwitcher/watcher"
 )
 
 // runAfterburner executes the MSI Afterburner command.

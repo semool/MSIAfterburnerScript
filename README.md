@@ -1,8 +1,8 @@
-# MSIAfterburnerScript
+# MSIAfterburnerProfileSwitcher
 A smart, event-driven utility for Windows that automatically applies MSI Afterburner profiles based on the application you are currently using.
 
 ## Description
-MSIAfterburnerScript is a lightweight, background utility designed to automate your system's overclocking profiles. Instead of keeping your computer's GPU constantly overclocked, this script intelligently applies specific MSI Afterburner profiles only when a designated application is running and in focus.
+MSIAfterburnerProfileSwitcher is a lightweight, background utility designed to automate your system's overclocking profiles. Instead of keeping your computer's GPU constantly overclocked, this script intelligently applies specific MSI Afterburner profiles only when a designated application is running and in focus.
 
 When you launch a game or a demanding application from your configured list, the script instantly applies your "On" profile. When you switch to another application or close the target application, it seamlessly reverts to your "Off" profile. This ensures you get maximum performance when you need it and maintain efficiency and lower temperatures when you don't.
 
@@ -41,9 +41,9 @@ _I have included the downloadable binaries for Windows, but if you want to build
 `rsrc -manifest main.manifest -ico icon.ico`
 4. Build the Executable:
    * To build a version that runs silently in the background (recommended for deployment), use this command:
-`go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerScript.exe"`
+`go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerProfileSwitcher.exe"`
    * To build a version with a visible console for debugging, use the standard build command:
-`go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerScriptDebug.exe`
+`go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerProfileSwitcherDebug.exe`
 
 ## Configuration
 The application is controlled by the `config.json` file, which will be created with default values on the first run.

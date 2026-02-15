@@ -6,9 +6,9 @@
 rsrc -manifest main.manifest -ico icon.ico
 
 :: Build under Windows for Windows
-go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerScriptDebug.exe
-go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerScript.exe
+go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerProfileSwitcherDebug.exe
+go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerProfileSwitcher.exe
 
 :: Build under Linux for Windows
-::GOOS=windows GOARCH=amd64 go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerScriptDebug.exe
-::GOOS=windows GOARCH=amd64 go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerScript.exe
+::GOOS=windows GOARCH=amd64 go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerProfileSwitcherDebug.exe
+::GOOS=windows GOARCH=amd64 go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerProfileSwitcher.exe
