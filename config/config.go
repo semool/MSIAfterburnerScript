@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-const configFile = "config.json"
+const configFile = "MSIAfterburnerProfileSwitcher.json"
 
 type Config struct {
 	AfterburnerPath string            `json:"afterburner_path"`
