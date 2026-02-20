@@ -6,7 +6,6 @@ import (
 	"strings"
 	"syscall"
 	"time"
-	"runtime"
 
 	"MSIAfterburnerProfileSwitcher/config"
 	"MSIAfterburnerProfileSwitcher/logger"
@@ -121,8 +120,6 @@ func onReady() {
 	logger.InitLogger()
 	log.Println("MSI Afterburner Profile Switcher started")
 
-	affinity()
-
 	cfg := config.Load()
 	log.Println("Configuration succesfully loaded")
 
@@ -134,18 +131,6 @@ func onReady() {
 	default:
 		log.Fatalf("Invalid monitoring_mode %q in config.json", cfg.MonitoringMode)
 	}
-}
-
-func affinity() {
-	// Run only on the first 4 Cores, mostly Performance Cores
-	hProcess := syscall.Handle(^uintptr(0))
-	ret, _, err := syscall.NewLazyDLL("kernel32.dll").NewProc("SetProcessAffinityMask").Call(uintptr(hProcess), 0xF)
-	if ret == 0 {
-		log.Fatalf("Error while setting Affinity:", err)
-		return
-	}
-	runtime.GOMAXPROCS(4)
-	log.Println("CPU Affinity is set to Cores 0-3")
 }
 
 func onExit() {
