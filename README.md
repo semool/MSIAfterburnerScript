@@ -47,7 +47,7 @@ _I have included the downloadable binarie for Windows, but if you want to build 
 
 ## Configuration
 The application is controlled by the `MSIAfterburnerProfileSwitcher.json` file, which will be created with default values on the first run.
-A complete Example Config is placed in the config dir in this Repository.
+A complete Example Config is placed in the config dir in this Repository: [Complete Example Config](https://github.com/semool/MSIAfterburnerScript/blob/main/config/MSIAfterburnerProfileSwitcher-Example.json)
 
 ```json
 {
