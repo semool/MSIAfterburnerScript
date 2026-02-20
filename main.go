@@ -9,8 +9,9 @@ import (
 	"runtime"
 
 	"MSIAfterburnerProfileSwitcher/config"
-	"MSIAfterburnerProfileSwitcher/watcher"
+	"MSIAfterburnerProfileSwitcher/logger"
 	"MSIAfterburnerProfileSwitcher/trayicon"
+	"MSIAfterburnerProfileSwitcher/watcher"
 
 	"github.com/getlantern/systray"
 )
@@ -95,26 +96,47 @@ func main() {
 }
 
 func onReady() {
-	trayicon.HideConsole()
-	// Add Tray Icon
+	//trayicon.HideConsole()
+
 	systray.SetIcon(trayicon.IconData)
 	systray.SetTitle("MSI Afterburner Profile Switcher")
 	systray.SetTooltip("MSI Afterburner Profile Switcher is running")
-	sConsole := systray.AddMenuItem("Toogle Console", "Toogle Console")
-	mQuit := systray.AddMenuItem("Close MSI Afterburner Profile Switcher", "Quits this app")
+	//sConsole := systray.AddMenuItem("Toogle Console", "Toogle Console")
+	mLog := systray.AddMenuItem("Show Log", "Open Log Window")
+	mQuit := systray.AddMenuItem("Quit", "Quit this app")
 	go func() {
 		for {
 			select {
-			case <-sConsole.ClickedCh:
-				trayicon.ToggleConsole()
+			//case <-sConsole.ClickedCh:
+			//	trayicon.ToggleConsole()
+			case <-mLog.ClickedCh:
+				logger.OpenOrFocusLogWindow()
 			case <-mQuit.ClickedCh:
 				systray.Quit()
 				return
 			}
 		}
 	}()
-	//
-	log.SetFlags(log.Ltime)
+
+	logger.InitLogger()
+	log.Println("MSI Afterburner Profile Switcher started")
+
+	affinity()
+
+	cfg := config.Load()
+	log.Println("Configuration succesfully loaded")
+
+	switch strings.ToLower(cfg.MonitoringMode) {
+	case "poll":
+		startPollingMode(cfg)
+	case "event":
+		startEventMode(cfg)
+	default:
+		log.Fatalf("Invalid monitoring_mode %q in config.json", cfg.MonitoringMode)
+	}
+}
+
+func affinity() {
 	// Run only on the first 4 Cores, mostly Performance Cores
 	hProcess := syscall.Handle(^uintptr(0))
 	ret, _, err := syscall.NewLazyDLL("kernel32.dll").NewProc("SetProcessAffinityMask").Call(uintptr(hProcess), 0xF)
@@ -124,17 +146,6 @@ func onReady() {
 	}
 	runtime.GOMAXPROCS(4)
 	log.Println("CPU Affinity is set to Cores 0-3")
-	//
-	cfg := config.Load()
-	log.Println("Configuration succesfully loaded")
-	switch strings.ToLower(cfg.MonitoringMode) {
-	case "poll":
-		startPollingMode(cfg)
-	case "event":
-		startEventMode(cfg)
-	default:
-		log.Fatalf("Invalid monitoring_mode %q in config.json", cfg.MonitoringMode)
-	}
 }
 
 func onExit() {

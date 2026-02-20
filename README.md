@@ -35,7 +35,7 @@ _I have included the downloadable binarie for Windows, but if you want to build 
 
 ### Building the Application
 1. Clone or Download the project files onto your computer.
-2. Run **`BUILDEXE.cmd`** to compile Normal and Debug Version.
+2. Run **`BUILDEXE.cmd`** to compile.
 
 ### Manual Steps
 1. **Install Resource Tool:** The project uses a manifest to request administrator privileges. You need `go-rsrc` to embed it. Install it with:
@@ -43,7 +43,7 @@ _I have included the downloadable binarie for Windows, but if you want to build 
 3. **Generate Resource File:** In the project's root directory, run `rsrc` to create the `.syso` file that the Go compiler will automatically embed:
    * `rsrc -manifest main.manifest -ico trayicon/icon.ico`
 3. **Build the Executable**:
-   * `go build -trimpath -gcflags "-l -B" -ldflags="-s -w" -o MSIAfterburnerProfileSwitcher.exe`
+   * `go build -trimpath -gcflags "-l -B" -ldflags="-s -w -H windowsgui" -o MSIAfterburnerProfileSwitcher.exe`
 
 ## Configuration
 The application is controlled by the `config.json` file, which will be created with default values on the first run.
@@ -76,5 +76,5 @@ The application is controlled by the `config.json` file, which will be created w
 1. Configure your config.json file with your desired settings and targets.
 2. Run the compiled .exe file.
 3. The application will request administrator privileges (if not already elevated) and start monitoring in the background.
-4. When running the application will have a Trayicon with Context Menu. You can stop the App or toogle the Console to show the Log Output.
+4. When running the application will have a Trayicon with Context Menu. You can stop the App or open a window to show the Log Output.
 5. For best results, add the executable to your Windows startup folder so it runs automatically when you log in.
