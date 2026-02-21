@@ -63,7 +63,7 @@ func (w winLogWriter) Write(p []byte) (n int, err error) {
 
 // Start Logger
 func InitLogger() {
-	log.SetFlags(log.Ltime)
+	//log.SetFlags(log.Ltime)
 
 	if consoleVisible {
 		// Console exist
