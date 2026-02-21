@@ -12,7 +12,7 @@ If multiple target applications are open, the script is smart enough to apply th
 * **Dynamic Profile Switching:** Automatically applies overclocking profiles when a target application is active and reverts when it's not.
 * **Foreground Priority:** Intelligently detects which application is currently in use and applies its specific profile, even with multiple target apps open.
 * **Highly Configurable:** All settings, including Afterburner's path, profiles, and target applications, are managed in a simple config.json file.
-* **Notifications** Can send a Toast Notification when the Profile is changed.
+* **Notifications:** Can send a Toast Notification when the Profile is changed.
 * **Two Monitoring Modes:**
     * **Event (Default):** An efficient, instant-reaction mode that uses system event hooks to detect application changes with no delay.
     * **Poll:** A fallback mode that checks for active applications on a timed interval.
