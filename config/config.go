@@ -13,6 +13,7 @@ const configFile = "MSIAfterburnerProfileSwitcher.json"
 
 type Config struct {
 	AfterburnerPath string            `json:"afterburner_path"`
+	Notifications   string            `json:"notifications"`
 	ProfileOn       string            `json:"profile_on"`
 	ProfileOff      string            `json:"profile_off"`
 	DelaySeconds    int               `json:"delay_seconds"`
@@ -23,6 +24,7 @@ type Config struct {
 func defaultConfig() Config {
 	return Config{
 		AfterburnerPath: `C:\Program Files (x86)\MSI Afterburner\MSIAfterburner.exe`,
+		Notifications:   "true",
 		ProfileOn:       "-Profile2",
 		ProfileOff:      "-Profile1",
 		DelaySeconds:    5,

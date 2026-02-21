@@ -12,6 +12,7 @@ If multiple target applications are open, the script is smart enough to apply th
 * **Dynamic Profile Switching:** Automatically applies overclocking profiles when a target application is active and reverts when it's not.
 * **Foreground Priority:** Intelligently detects which application is currently in use and applies its specific profile, even with multiple target apps open.
 * **Highly Configurable:** All settings, including Afterburner's path, profiles, and target applications, are managed in a simple config.json file.
+* **Notifications** Can send a Toast Notification when the Profile is changed.
 * **Two Monitoring Modes:**
     * **Event (Default):** An efficient, instant-reaction mode that uses system event hooks to detect application changes with no delay.
     * **Poll:** A fallback mode that checks for active applications on a timed interval.
@@ -52,6 +53,7 @@ A complete Example Config is placed in the config dir in this Repository: [Compl
 ```json
 {
     "afterburner_path": "C:\\Program Files (x86)\\MSI Afterburner\\MSIAfterburner.exe",
+    "notifications": "true",
     "profile_on": "-Profile2",
     "profile_off": "-Profile1",
     "delay_seconds": 5,
@@ -65,6 +67,7 @@ A complete Example Config is placed in the config dir in this Repository: [Compl
 ```
 
 * **afterburner_path:** The full path to your MSIAfterburner.exe. You must use double backslashes (\\) in the path.
+* **notifications:** Enable `true` or disable `false` the Toast Notifications 
 * **profile_on:** The default profile to apply when a target application is found but doesn't have a specific override.
 * **profile_off:** The profile to apply when no target applications are active.
 * **delay_seconds:** (Only used in poll mode) The number of seconds to wait between checks.

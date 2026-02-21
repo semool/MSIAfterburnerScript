@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"fmt"
 	"os/exec"
 	"strings"
 	"syscall"
@@ -13,16 +14,29 @@ import (
 	"MSIAfterburnerProfileSwitcher/watcher"
 
 	"github.com/getlantern/systray"
+	"github.com/gen2brain/beeep"
 )
 
 // runAfterburner executes the MSI Afterburner command.
-func runAfterburner(exe, arg string) {
+func runAfterburner(target, notify, exe, arg string) {
 	cmd := exec.Command(exe, arg)
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	if err := cmd.Start(); err != nil {
 		log.Printf("Failed to launch Afterburner with profile %s: %v", arg, err)
 	} else {
 		log.Printf("Successfully applied profile: %s", arg)
+
+		if notify == "true" {
+			beeep.AppName = "MSI Afterburner Profile Switcher"
+			err := beeep.Notify(
+				fmt.Sprintf("Detected: %s", target),
+				fmt.Sprintf("Applied profile: %s", arg),
+				trayicon.IconData,
+			)
+			if err != nil {
+				panic(err)
+			}
+		}
 	}
 }
 
@@ -44,14 +58,11 @@ func checkStateAndApplyProfile(cfg *config.Config, currentProfile *string) {
 	} else {
 		desiredProfile = cfg.ProfileOff
 	}
+	if activeTarget == "" { activeTarget = "Profile_Off" }
 
 	if desiredProfile != *currentProfile {
-		if isActive {
-			log.Printf("Running application detected: '%s', Desired profile: %s", activeTarget, desiredProfile)
-		} else {
-			log.Printf("Running application detected: '', Desired profile: %s", desiredProfile)
-		}
-		runAfterburner(cfg.AfterburnerPath, desiredProfile)
+		log.Printf("Running application detected: '%s', Desired profile: %s", activeTarget, desiredProfile)
+		runAfterburner(activeTarget, cfg.Notifications, cfg.AfterburnerPath, desiredProfile)
 		*currentProfile = desiredProfile
 	}
 }
@@ -69,6 +80,7 @@ func startPollingMode(cfg config.Config) {
 		cfg.ProfileOff = reloadedCfg.ProfileOff
 		cfg.Overrides = reloadedCfg.Overrides
 		cfg.AfterburnerPath = reloadedCfg.AfterburnerPath
+		cfg.Notifications = reloadedCfg.Notifications
 		checkStateAndApplyProfile(&cfg, &currentProfile)
 	}
 }
@@ -83,6 +95,7 @@ func startEventMode(cfg config.Config) {
 		cfg.ProfileOff = reloadedCfg.ProfileOff
 		cfg.Overrides = reloadedCfg.Overrides
 		cfg.AfterburnerPath = reloadedCfg.AfterburnerPath
+		cfg.Notifications = reloadedCfg.Notifications
 		checkStateAndApplyProfile(&cfg, &currentProfile)
 	}
 	eventHandler()
