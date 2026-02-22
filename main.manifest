@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <assemblyIdentity version="1.0.0.0" processorArchitecture="*" name="main" type="win32" />
+  <assemblyIdentity version="1.0.0.0" processorArchitecture="*" name="MSI Afterburner Profile Switcher" type="win32" />
   <description>MSI Afterburner Profile Switcher</description>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
     <security>
@@ -9,4 +9,10 @@
       </requestedPrivileges>
     </security>
   </trustInfo>
+  <application xmlns="urn:schemas-microsoft-com:asm.v3">
+    <windowsSettings>
+      <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2, PerMonitor</dpiAwareness>
+      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">True</dpiAware>
+    </windowsSettings>
+  </application>
 </assembly>
