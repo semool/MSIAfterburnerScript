@@ -25,7 +25,8 @@ func runAfterburner(target, notify, exe, arg string) {
 		log.Printf("Failed to launch Afterburner with profile %s: %v", arg, err)
 	} else {
 		log.Printf("Successfully applied profile: %s", arg)
-
+		// Toast Notification
+		notify := strings.ToLower(notify)
 		if notify == "true" {
 			beeep.AppName = "MSI Afterburner Profile Switcher"
 			err := beeep.Notify(
@@ -34,7 +35,7 @@ func runAfterburner(target, notify, exe, arg string) {
 				trayicon.IconData,
 			)
 			if err != nil {
-				panic(err)
+				log.Printf("Failed to send notification %v", err)
 			}
 		}
 	}
@@ -141,8 +142,6 @@ func onReady() {
 		startPollingMode(cfg)
 	case "event":
 		startEventMode(cfg)
-	default:
-		log.Fatalf("Invalid monitoring_mode %q in config.json", cfg.MonitoringMode)
 	}
 }
 

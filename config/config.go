@@ -98,6 +98,10 @@ func Load() Config {
 	if err := validateProfileString(cfg.ProfileOff); err != nil || cfg.ProfileOff == "" {
 		log.Fatalf("Configuration error in 'profile_off'. A valid profile must be like \"-ProfileN\" where N is a number from 1 to 5. Details: %v", err)
 	}
+	notify := strings.ToLower(cfg.Notifications)
+	if notify != "true" && notify != "false" {
+		log.Fatalf("Configuration error: 'notifications' must be either \"true\" or \"false\", but found %q. Please correct the value in %s.", cfg.Notifications, configFile)
+	}
 	mode := strings.ToLower(cfg.MonitoringMode)
 	if mode != "poll" && mode != "event" {
 		log.Fatalf("Configuration error: 'monitoring_mode' must be either \"poll\" or \"event\", but found %q. Please correct the value in %s.", cfg.MonitoringMode, configFile)
